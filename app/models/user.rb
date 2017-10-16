@@ -26,11 +26,20 @@ class User < ApplicationRecord
     result = self.all.map do |user|
       count = relative ? (user.message_contains(string) / user.messages.count.to_f) : user.message_contains(string)
 
-      [user.name, count, user.message_contains(string)]
+      {
+        name: user.name,
+        count: count,
+        total_count: user.message_contains(string)
+      }
     end
+    result.each { |r| r[:answer] = "#{r[:name]}: #{r[:count]} #{%((#{r[:total_count]})) if relative}" }
+
+    result = result.sort_by { |r| r[:count] }.reverse
 
     puts "'#{string}'#{" per bericht" if relative }:"
-    result.sort_by { |r| r[1] }.reverse.each { |r| puts "#{r[0]}: #{r[1]} #{%((#{r[2]})) if relative}" }
+    result.each { |r| puts r[:answer] }
+
+    result
   end
 
   def self.word_to_regex(string)

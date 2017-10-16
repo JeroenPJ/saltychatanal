@@ -1,0 +1,62 @@
+<h1>Salty chat anal(yser)</h1>
+<p>Door Jeroen</p>
+
+<input placeholder="Voer een woord (of regex) in" id="input" style="width: 100%; max-width: 600px">
+<br>
+<label for="relative">Relatief?</label>
+<input name="relative" id="relative" type="checkbox">
+<br>
+<label for="as_word">Als woord?</label>
+<input name="as_word" id="as_word" type="checkbox">
+
+<br>
+<br>
+
+<a id="go" href="#">Gaan met die banaan</a>
+
+<ol id="result">
+
+</ol>
+
+<% content_for(:after_js) do %>
+<script>
+  function print_data(data) {
+    $result = $('#result');
+    $result.empty();
+
+    $.each(data, function(i, output) {
+      console.log(output);
+      $result.append('<li>' + output.answer + '</li>');
+    });
+  }
+
+  function get_results(input, relative, as_word) {
+    $.ajax({
+        type: "GET",
+        url: "/result",
+        data: {
+          "input": input,
+          "relative": relative,
+          "as_word": as_word
+        },
+        dataType: 'json',
+        success: function(data) {
+          print_data(data),
+          console.log(data);
+        },
+        error: function(jqXHR) {
+          console.error(jqXHR.responseText);
+        }
+      });
+  }
+
+  $(function() {
+    $('#go').click(function() {
+      var input = $('#input').val();
+      var relative = $('#relative').prop('checked');
+      var as_word = $('#as_word').prop('checked');
+      get_results(input, relative, as_word);
+    });
+  });
+</script>
+<% end %>
