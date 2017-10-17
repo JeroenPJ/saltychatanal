@@ -1,26 +1,32 @@
-<h1><strong>Salty chat anal(yser)</strong></h1>
-<p><em>Door Jerry</em></p>
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-md-6 col-md-offset-3">
+      <h1><strong>Salty chat anal(yser)</strong></h1>
+      <p><em>Door Jerry</em></p>
 
-<br>
-<input placeholder="Voer hier een woord (of regex (grapje regex werkt nog niet)) in" id="input" style="width: 100%; max-width: 600px">
-<br>
-<label for="relative">Relatief?</label>
-<input name="relative" id="relative" type="checkbox">
-<br>
-<label for="as_word">Als woord?</label>
-<input name="as_word" id="as_word" type="checkbox">
+      <br>
+      <input placeholder="Voer hier een woord (of regex (grapje regex werkt nog niet)) in" id="input" style="width: 100%; max-width: 600px">
+      <br>
+      <label for="relative">Relatief?</label>
+      <input name="relative" id="relative" type="checkbox">
+      <br>
+      <label for="as_word">Als woord?</label>
+      <input name="as_word" id="as_word" type="checkbox">
 
-<br>
-<br>
+      <br>
+      <br>
 
-<a id="go" href="#">Gaan met die banaan</a>
+      <a id="go" href="#">Gaan met die banaan</a>
 
-<br>
+      <br>
 
-<h4>Resultaat hokje:</h4>
-<ol id="result" style="border-radius: 5px; min-height: 100px;min-width: 300px; max-width: 600px; background: white; border: 1px solid grey">
+      <h4>Resultaat hokje:</h4>
+      <ol id="result" style="border-radius: 5px; min-height: 100px;min-width: 300px; max-width: 600px; background: white; border: 1px solid grey">
 
-</ol>
+      </ol>
+    </div>
+  </div>
+</div>
 
 <% content_for(:after_js) do %>
 <script>
@@ -56,6 +62,9 @@
 
   $(function() {
     $('#go').click(function() {
+      $result = $('#result');
+      $result.empty().append("<p>Loading... <span style='font-size: 13px'>DON'T PANIC</span></p>");
+
       var input = $('#input').val();
       var relative = $('#relative').prop('checked');
       var as_word = $('#as_word').prop('checked');
