@@ -1,14 +1,18 @@
 class User < ApplicationRecord
   has_many :messages, dependent: :delete_all
 
-  def message_contains(input)
+  def messages_with(input)
     self.messages.select do |m|
       if input.class == String
         m.text.downcase.include? input
       else
         m.text.downcase =~ input
       end
-    end.length
+    end
+  end
+
+  def count_messages_with(input)
+    messages_with(input).length
   end
 
   def average_message_length
@@ -17,19 +21,22 @@ class User < ApplicationRecord
     sum.to_f / self.messages.count
   end
 
-  def self.count_messages_with(string, options = {})
+  def self.messages_with(string, options = {})
     relative = options[:relative] || false
     as_word = options[:as_word] || false
 
     string = word_to_regex(string) if as_word
 
     result = self.all.map do |user|
-      count = relative ? (user.message_contains(string) / user.messages.count.to_f) : user.message_contains(string)
+      messages = user.messages_with(string)
+      message_count = messages.length
+      count = relative ? (message_count / user.messages.count.to_f) : message_count
 
       {
+        messages: messages,
         name: user.name,
         count: count,
-        total_count: user.message_contains(string)
+        total_count: message_count
       }
     end
     result.each { |r| r[:answer] = "#{r[:name]}: #{r[:count]} #{%((#{r[:total_count]})) if relative}" }
@@ -40,6 +47,10 @@ class User < ApplicationRecord
     result.each { |r| puts r[:answer] }
 
     result
+  end
+
+  def self.count_messages_with(string, options = {})
+    self.messages_with(string, options = {})
   end
 
   def self.word_to_regex(string)
