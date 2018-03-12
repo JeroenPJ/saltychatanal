@@ -1,16 +1,27 @@
 class Parser
-  def parse(filename = './chat.txt')
-    File.open(filename, 'r').each_line do |line|
-      line_info = /(.*) - (.*): (.*)/.match(line)
-      if line_info
-        time = DateTime.strptime(line_info[0], '%m/%d/%y, %H:%M')
-        username = line_info[2]
-        message = line_info[3]
-        message.gsub!("\u0000", '')
+  def self.parse(filename = './chat.txt')
+    content = File.read(filename)
 
-        user = User.find_or_create_by(name: username)
-        Message.create(user: user, text: message, timestamp: time)
-      end
+    puts "Finished reading file"
+
+    regex = /(\d{1,2}\/\d{1,2}\/\d\d, \d\d:\d\d) - (.*?): (.+?(?=\d{1,2}\/\d{1,2}\/\d\d, \d\d:\d\d))/m
+
+    puts "Scanning regex..."
+
+    results = content.scan(regex)
+    total = results.length
+
+    puts "Finished scanning content, total messages: #{total}"
+
+    results.each_with_index do |result, i|
+      puts "Saving message #{i}/#{total}"
+      time = DateTime.strptime(result[0], '%m/%d/%y, %H:%M')
+      username = result[1]
+      message = result[2]
+      message.gsub!("\u0000", '')
+
+      user = User.find_or_create_by(name: username)
+      Message.create(user: user, text: message, timestamp: time)
     end
   end
 end
